@@ -1,0 +1,85 @@
+$schema: https://azuremlschemas.azureedge.net/latest/pipelineJob.schema.json
+type: pipeline
+
+display_name: feature_pipeline
+experiment_name: feature_pipeline
+
+inputs:
+  sampled_data:
+    type: uri_folder
+    path: azureml:amazon_electronics_features_v1_sampled:1
+  seed: 42
+  train_ratio: 0.7
+  val_ratio: 0.15
+
+jobs:
+  split:
+    type: command
+    component: azureml:split_dataset:2026-02-28-18-40-29-4657049
+    compute: azureml:cpu-cluster
+    inputs:
+      data: ${{parent.inputs.sampled_data}}
+      seed: ${{parent.inputs.seed}}
+      train_ratio: ${{parent.inputs.train_ratio}}
+      val_ratio: ${{parent.inputs.val_ratio}}
+
+  normalize_train:
+    type: command
+    component: azureml:normalize_text:2026-02-28-18-40-33-9887823
+    compute: azureml:cpu-cluster
+    inputs:
+      data: ${{parent.jobs.split.outputs.train}}
+
+  normalize_val:
+    type: command
+    component: azureml:normalize_text:2026-02-28-18-40-33-9887823
+    compute: azureml:cpu-cluster
+    inputs:
+      data: ${{parent.jobs.split.outputs.val}}
+
+  normalize_test:
+    type: command
+    component: azureml:normalize_text:2026-02-28-18-40-33-9887823
+    compute: azureml:cpu-cluster
+    inputs:
+      data: ${{parent.jobs.split.outputs.test}}
+
+  length_train:
+    type: command
+    component: azureml:length_features:2026-02-28-18-52-13-5124569
+    compute: azureml:cpu-cluster
+    inputs:
+      data: ${{parent.jobs.normalize_train.outputs.out}}
+
+  sentiment_train:
+    type: command
+    component: azureml:sentiment_features:2026-03-01-05-19-18-2199282
+    compute: azureml:cpu-cluster
+    inputs:
+      data: ${{parent.jobs.normalize_train.outputs.out}}
+
+  tfidf:
+    type: command
+    component: azureml:tfidf_features:2026-03-01-11-32-10-4746383
+    compute: azureml:cpu-cluster
+    inputs:
+      train: ${{parent.jobs.normalize_train.outputs.out}}
+      val: ${{parent.jobs.normalize_val.outputs.out}}
+      test: ${{parent.jobs.normalize_test.outputs.out}}
+
+  sbert_train:
+    type: command
+    component: azureml:sbert_embeddings:2026-02-28-18-56-14-7003034
+    compute: azureml:cpu-cluster
+    inputs:
+      input_data: ${{parent.jobs.normalize_train.outputs.out}}
+
+  merge_all:
+    type: command
+    component: azureml:merge_features:2026-02-28-18-58-11-7324516
+    compute: azureml:cpu-cluster
+    inputs:
+      length: ${{parent.jobs.length_train.outputs.out}}
+      sentiment: ${{parent.jobs.sentiment_train.outputs.out}}
+      tfidf: ${{parent.jobs.tfidf.outputs.train_out}}
+      sbert: ${{parent.jobs.sbert_train.outputs.output_data}}
