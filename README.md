@@ -1,66 +1,70 @@
-# DSAI3202 – Lab 4 (Part 1): Text Feature Engineering with Azure ML
+# Lab 4 – Text Feature Engineering with Azure ML
 
-**Student:** TBM (60300943)  
-**Course:** Cloud Computing – Winter 2026  
+## Overview
+This lab implements an end-to-end **text feature engineering pipeline** using Azure Machine Learning.  
+The goal is to transform raw Amazon Electronics reviews into structured numerical features that can later be used for model training.
 
----
-
-## Purpose of this lab
-
-The goal of this lab is **not just to generate features**, but to understand how **Azure ML pipelines** allow us to build a **modular, reproducible, and scalable text feature engineering workflow**.
-
-Instead of running scripts manually, each step is isolated as a **command component**, then connected together in a single pipeline.
+The entire workflow is built as a **reproducible Azure ML pipeline** composed of modular components.
 
 ---
 
-## What I built (and why)
-
-I started with a sampled Amazon Electronics review dataset and built a pipeline that prepares the text for machine learning.
-
-The pipeline performs the following steps **in order**, where each step depends on the previous one:
-
-1. **Split Dataset**  
-   The raw dataset is split into train, validation, and test sets to avoid data leakage.
-
-2. **Normalize Text**  
-   Review text is cleaned and normalized so that all downstream features are consistent.
-
-3. **Feature Extraction**  
-   Multiple types of features are generated from the same normalized text:
-   - Text length features (simple statistical signals)
-   - Sentiment features (polarity-based signals)
-   - TF-IDF features (sparse lexical representation)
-   - SBERT embeddings (dense semantic representation)
-
-   Each feature type captures *different information* from the same text.
-
-4. **Merge Features**  
-   All extracted features are merged into a single dataset so they can be used together by future models.
+## Dataset
+- **Input dataset:** `amazon_electronics_features_v1_sampled`
+- Stored as an Azure ML `uri_folder`
+- Contains cleaned and sampled Amazon Electronics reviews
 
 ---
 
-## Why Azure ML pipelines
+## Pipeline Design
 
-Using Azure ML pipelines ensures that:
-- Every step is **reproducible**
-- Components can be **reused or replaced independently**
-- The full workflow can be executed with **one command**
-- Failures are isolated to specific steps, making debugging easier
+The pipeline follows the exact sequence required in the lab instructions:
 
-This is much closer to how real-world ML systems are built compared to running scripts locally.
+1. **Split Dataset**
+   - Splits the dataset into train / validation / test sets
+   - Uses fixed ratios and a seed for reproducibility
+
+2. **Normalize Review Text**
+   - Cleans and standardizes review text
+   - Applied independently to train, validation, and test splits
+
+3. **Feature Extraction**
+   - **Length Features:** character and word length statistics
+   - **Sentiment Features:** polarity and subjectivity scores
+   - **TF-IDF Features:** sparse bag-of-words representation
+   - **SBERT Embeddings:** semantic sentence embeddings
+
+4. **Merge All Features**
+   - Combines all extracted features into a single feature dataset
+   - Output is stored as a unified feature table for downstream modeling
 
 ---
 
-## Final output
+## Azure ML Components
+Each step in the pipeline is implemented as a reusable Azure ML **command component**:
+- `split_dataset`
+- `normalize_text`
+- `length_features`
+- `sentiment_features`
+- `tfidf_features`
+- `sbert_embeddings`
+- `merge_features`
 
-The final result of the pipeline is a single merged feature file: all_features.parquet
-This file contains **all engineered features** and is stored in Azure ML blob storage.
+This modular design makes the pipeline easy to debug, reuse, and extend.
 
 ---
 
-## What this lab demonstrates
+## Results
+- The pipeline executed successfully end-to-end
+- All feature extraction steps completed without errors
+- Final merged feature dataset was generated and stored in Azure Blob Storage
 
-- Understanding of Azure ML command components
-- Correct use of pipeline dependencies
-- Practical text feature engineering in the cloud
-- Separation of data processing logic into clean, modular steps
+Screenshots showing:
+- the full pipeline graph
+- successful execution of each component  
+are provided at the **bottom of this page**.
+
+---
+
+## Screenshots
+
+Screenshots of the completed pipeline and component outputs can be found in the `screenshots/` folder.
