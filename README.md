@@ -52,6 +52,14 @@ Each step in the pipeline is implemented as a reusable Azure ML **command compon
 This modular design makes the pipeline easy to debug, reuse, and extend.
 
 ---
+## Azure ML Pipeline Execution
+
+The text feature engineering pipeline was successfully executed on Azure Machine Learning.
+
+Azure ML run link:
+https://ml.azure.com/experiments/id/acbc0636-5933-49a3-896b-e11e9b538c31/runs/eager_airport_rtzr96pbv3?wsid=/subscriptions/a00dcbea-fd05-4973-82dc-120208b60116/resourceGroups/rg-60300943/providers/Microsoft.MachineLearningServices/workspaces/Amazon-Electronics-Lab-60300943
+
+Screenshots of the pipeline graph and component outputs are provided at the bottom of this README.
 
 ## Results
 - The pipeline executed successfully end-to-end
