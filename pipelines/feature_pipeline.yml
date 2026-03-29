@@ -7,7 +7,7 @@ experiment_name: feature_pipeline
 inputs:
   sampled_data:
     type: uri_folder
-    path: azureml:amazon_electronics_features_v1_sampled@1
+    path: azureml:amazon_electronics_features_v1_sampled:1
   seed: 42
   train_ratio: 0.60
   val_ratio: 0.15
@@ -17,7 +17,7 @@ inputs:
 jobs:
   split:
     type: command
-    component: azureml:split_dataset@latest
+    component: azureml:split_dataset:2026-03-29-06-25-45-3835084
     compute: azureml:cpu-cluster
     inputs:
       data: ${{parent.inputs.sampled_data}}
@@ -29,91 +29,91 @@ jobs:
 
   normalize_train:
     type: command
-    component: azureml:normalize_text@latest
+    component: azureml:normalize_text:2026-03-29-06-34-34-0549874
     compute: azureml:cpu-cluster
     inputs:
       data: ${{parent.jobs.split.outputs.train}}
 
   normalize_val:
     type: command
-    component: azureml:normalize_text@latest
+    component: azureml:normalize_text:2026-03-29-06-34-34-0549874
     compute: azureml:cpu-cluster
     inputs:
       data: ${{parent.jobs.split.outputs.val}}
 
   normalize_test:
     type: command
-    component: azureml:normalize_text@latest
+    component: azureml:normalize_text:2026-03-29-06-34-34-0549874
     compute: azureml:cpu-cluster
     inputs:
       data: ${{parent.jobs.split.outputs.test}}
 
   normalize_deploy:
     type: command
-    component: azureml:normalize_text@latest
+    component: azureml:normalize_text:2026-03-29-06-34-34-0549874
     compute: azureml:cpu-cluster
     inputs:
       data: ${{parent.jobs.split.outputs.deploy}}
 
   length_train:
     type: command
-    component: azureml:length_features@latest
+    component: azureml:length_features:2026-03-29-06-39-43-8722835
     compute: azureml:cpu-cluster
     inputs:
       data: ${{parent.jobs.normalize_train.outputs.out}}
 
   length_val:
     type: command
-    component: azureml:length_features@latest
+    component: azureml:length_features:2026-03-29-06-39-43-8722835
     compute: azureml:cpu-cluster
     inputs:
       data: ${{parent.jobs.normalize_val.outputs.out}}
 
   length_test:
     type: command
-    component: azureml:length_features@latest
+    component: azureml:length_features:2026-03-29-06-39-43-8722835
     compute: azureml:cpu-cluster
     inputs:
       data: ${{parent.jobs.normalize_test.outputs.out}}
 
   length_deploy:
     type: command
-    component: azureml:length_features@latest
+    component: azureml:length_features:2026-03-29-06-39-43-8722835
     compute: azureml:cpu-cluster
     inputs:
       data: ${{parent.jobs.normalize_deploy.outputs.out}}
 
   sentiment_train:
     type: command
-    component: azureml:sentiment_features@latest
+    component: azureml:sentiment_features:2026-03-29-06-41-29-1705785
     compute: azureml:cpu-cluster
     inputs:
       data: ${{parent.jobs.normalize_train.outputs.out}}
 
   sentiment_val:
     type: command
-    component: azureml:sentiment_features@latest
+    component: azureml:sentiment_features:2026-03-29-06-41-29-1705785
     compute: azureml:cpu-cluster
     inputs:
       data: ${{parent.jobs.normalize_val.outputs.out}}
 
   sentiment_test:
     type: command
-    component: azureml:sentiment_features@latest
+    component: azureml:sentiment_features:2026-03-29-06-41-29-1705785
     compute: azureml:cpu-cluster
     inputs:
       data: ${{parent.jobs.normalize_test.outputs.out}}
 
   sentiment_deploy:
     type: command
-    component: azureml:sentiment_features@latest
+    component: azureml:sentiment_features:2026-03-29-06-41-29-1705785
     compute: azureml:cpu-cluster
     inputs:
       data: ${{parent.jobs.normalize_deploy.outputs.out}}
 
   tfidf:
     type: command
-    component: azureml:tfidf_features@latest
+    component: azureml:tfidf_features:2026-03-29-06-21-08-8050292
     compute: azureml:cpu-cluster
     inputs:
       train: ${{parent.jobs.normalize_train.outputs.out}}
@@ -123,35 +123,35 @@ jobs:
 
   sbert_train:
     type: command
-    component: azureml:sbert_embeddings@latest
+    component: azureml:sbert_embeddings:2026-03-29-06-41-35-6475618
     compute: azureml:cpu-cluster
     inputs:
       input_data: ${{parent.jobs.normalize_train.outputs.out}}
 
   sbert_val:
     type: command
-    component: azureml:sbert_embeddings@latest
+    component: azureml:sbert_embeddings:2026-03-29-06-41-35-6475618
     compute: azureml:cpu-cluster
     inputs:
       input_data: ${{parent.jobs.normalize_val.outputs.out}}
 
   sbert_test:
     type: command
-    component: azureml:sbert_embeddings@latest
+    component: azureml:sbert_embeddings:2026-03-29-06-41-35-6475618
     compute: azureml:cpu-cluster
     inputs:
       input_data: ${{parent.jobs.normalize_test.outputs.out}}
 
   sbert_deploy:
     type: command
-    component: azureml:sbert_embeddings@latest
+    component: azureml:sbert_embeddings:2026-03-29-06-41-35-6475618
     compute: azureml:cpu-cluster
     inputs:
       input_data: ${{parent.jobs.normalize_deploy.outputs.out}}
 
   merge_train:
     type: command
-    component: azureml:merge_features@latest
+    component: azureml:merge_features:2026-03-29-06-21-18-0798011
     compute: azureml:cpu-cluster
     inputs:
       base: ${{parent.jobs.normalize_train.outputs.out}}
@@ -162,7 +162,7 @@ jobs:
 
   merge_val:
     type: command
-    component: azureml:merge_features@latest
+    component: azureml:merge_features:2026-03-29-06-21-18-0798011
     compute: azureml:cpu-cluster
     inputs:
       base: ${{parent.jobs.normalize_val.outputs.out}}
@@ -173,7 +173,7 @@ jobs:
 
   merge_test:
     type: command
-    component: azureml:merge_features@latest
+    component: azureml:merge_features:2026-03-29-06-21-18-0798011
     compute: azureml:cpu-cluster
     inputs:
       base: ${{parent.jobs.normalize_test.outputs.out}}
@@ -184,7 +184,7 @@ jobs:
 
   merge_deploy:
     type: command
-    component: azureml:merge_features@latest
+    component: azureml:merge_features:2026-03-29-06-21-18-0798011
     compute: azureml:cpu-cluster
     inputs:
       base: ${{parent.jobs.normalize_deploy.outputs.out}}

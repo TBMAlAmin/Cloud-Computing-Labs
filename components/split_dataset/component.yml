@@ -33,7 +33,6 @@ outputs:
     type: uri_folder
 
 code: .
-
 command: >
   python split.py
   --data ${{inputs.data}}
@@ -47,4 +46,4 @@ command: >
   --test_out ${{outputs.test}}
   --deploy_out ${{outputs.deploy}}
 
-environment: azureml:AzureML-sklearn-1.1-ubuntu20.04-py38-cpu@latest
+environment: azureml://registries/azureml/environments/sklearn-1.1-ubuntu20.04-py38-cpu/versions/17
